@@ -27,6 +27,7 @@ public class AchievementChecker {
         UUID userId = request.getUserId();
         String event = request.getEventType();
 
+        //First record
         checkAndUnlock(userId, AchievementType.FIRST_MEAL_LOGGED,
                 "MEAL_ADDED".equals(event), newAchievements);
 
@@ -36,13 +37,26 @@ public class AchievementChecker {
         checkAndUnlock(userId, AchievementType.FIRST_LOG_CREATED,
                 "LOG_CREATED".equals(event), newAchievements);
 
+        //Water
+        boolean waterGoalMet = request.getWaterIntake() != null
+                && request.getTargetWater() != null
+                && request.getTargetWater() > 0
+                && request.getWaterIntake() >= request.getTargetWater();
+
         checkAndUnlock(userId, AchievementType.DAILY_WATER_GOAL_MET,
-                request.getWaterIntake() != null
-                        && request.getTargetWater() != null
-                        && request.getTargetWater() > 0
-                        && request.getWaterIntake() >= request.getTargetWater(),
+                waterGoalMet, newAchievements);
+
+        checkAndUnlock(userId, AchievementType.WATER_STREAK_3,
+                request.getWaterStreakDays() != null
+                        && request.getWaterStreakDays() >= 3,
                 newAchievements);
 
+        checkAndUnlock(userId, AchievementType.HYDRATION_MASTER,
+                request.getWaterStreakDays() != null
+                        && request.getWaterStreakDays() >= 7,
+                newAchievements);
+
+        //Calories
         checkAndUnlock(userId, AchievementType.CALORIE_GOAL_MET,
                 request.getCaloriesConsumed() != null
                         && request.getTargetCalories() != null
@@ -52,11 +66,39 @@ public class AchievementChecker {
                         >= request.getTargetCalories() * 0.9,
                 newAchievements);
 
+        //Macros
+        checkAndUnlock(userId, AchievementType.MACRO_BALANCE_MASTER,
+                request.getProteinConsumed() != null
+                        && request.getTargetProtein() != null
+                        && request.getCarbsConsumed() != null
+                        && request.getTargetCarbs() != null
+                        && request.getFatsConsumed() != null
+                        && request.getTargetFats() != null
+                        && request.getTargetProtein() > 0
+                        && request.getTargetCarbs() > 0
+                        && request.getTargetFats() > 0
+                        && request.getProteinConsumed() >= request.getTargetProtein() * 0.9
+                        && request.getCarbsConsumed() >= request.getTargetCarbs() * 0.9
+                        && request.getFatsConsumed() >= request.getTargetFats() * 0.9,
+                newAchievements);
+
+        //Workout
         checkAndUnlock(userId, AchievementType.BURNED_1000_CALORIES,
                 request.getTotalCaloriesBurned() != null
                         && request.getTotalCaloriesBurned() >= 1000,
                 newAchievements);
 
+        checkAndUnlock(userId, AchievementType.WORKOUT_STREAK_3,
+                request.getWorkoutStreakDays() != null
+                        && request.getWorkoutStreakDays() >= 3,
+                newAchievements);
+
+        checkAndUnlock(userId, AchievementType.WORKOUT_STREAK_7,
+                request.getWorkoutStreakDays() != null
+                        && request.getWorkoutStreakDays() >= 7,
+                newAchievements);
+
+        //Logs
         checkAndUnlock(userId, AchievementType.STREAK_3_DAYS,
                 request.getConsecutiveDays() != null
                         && request.getConsecutiveDays() >= 3,
@@ -70,6 +112,11 @@ public class AchievementChecker {
         checkAndUnlock(userId, AchievementType.STREAK_30_DAYS,
                 request.getConsecutiveDays() != null
                         && request.getConsecutiveDays() >= 30,
+                newAchievements);
+
+        //Complete day
+        checkAndUnlock(userId, AchievementType.COMPLETE_DAY,
+                Boolean.TRUE.equals(request.getCompleteDayFlag()),
                 newAchievements);
 
         return newAchievements;

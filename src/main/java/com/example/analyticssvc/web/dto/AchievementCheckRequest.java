@@ -18,8 +18,10 @@ public class AchievementCheckRequest {
     private Integer targetCalories;
     private Integer waterIntake;
     private Integer targetWater;
+    private Integer waterStreakDays;
     private Integer caloriesBurned;
     private Integer totalCaloriesBurned;
+    private Integer workoutStreakDays;
     private Integer consecutiveDays;
     private Double proteinConsumed;
     private Double targetProtein;
@@ -27,4 +29,5 @@ public class AchievementCheckRequest {
     private Double targetCarbs;
     private Double fatsConsumed;
     private Double targetFats;
+    private Boolean completeDayFlag;
 }
