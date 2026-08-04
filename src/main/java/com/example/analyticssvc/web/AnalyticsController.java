@@ -94,4 +94,24 @@ public class AnalyticsController {
     public ResponseEntity<List<ChallengeDto>> getAllChallenges() {
         return ResponseEntity.ok(challengeService.getAllActiveChallenges());
     }
+
+    @PostMapping("/challenges/progress")
+    public ResponseEntity<Void> updateChallengeProgress(
+            @RequestBody AchievementCheckRequest request) {
+        challengeService.updateProgressForUser(request.getUserId(), request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/weekly-summary/record")
+    public ResponseEntity<Void> recordDailySnapshot(
+            @RequestBody DailySnapshotRequest request) {
+        achievementService.recordSnapshot(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/challenges/{id}/admin")
+    public ResponseEntity<Void> deleteChallenge(@PathVariable UUID id) {
+        challengeService.deleteChallenge(id);
+        return ResponseEntity.noContent().build();
+    }
 }
