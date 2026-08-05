@@ -103,6 +103,9 @@ public class ChallengeService {
                 yield Math.min(workouts * 20, 100);
             }
             case DRINK_3L_WATER -> {
+                if (req.getWaterStreakDays() != null && req.getWaterStreakDays() > 0) {
+                    yield Math.min(req.getWaterStreakDays() * 14, 100);
+                }
                 int water = req.getWaterIntake() != null ? req.getWaterIntake() : 0;
                 yield Math.min((int) ((water / 3000.0) * 100), 100);
             }
