@@ -31,10 +31,6 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         try{
             String apiKey = request.getHeader(X_API_KEY);
 
-            System.out.println("=== API KEY FILTER ===");
-            System.out.println("Received key: [" + apiKey + "]");
-            System.out.println("Valid key:    [" + validApiKey + "]");
-
             if (apiKey == null ||  apiKey.isBlank()) {
                 throw new InvalidApiKeyException(
                         "Missing API Key header!",
