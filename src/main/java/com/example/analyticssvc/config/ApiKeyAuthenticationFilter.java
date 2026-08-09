@@ -1,10 +1,12 @@
 package com.example.analyticssvc.config;
 
+import com.example.analyticssvc.exception.InvalidApiKeyException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,12 +31,20 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
         try{
             String apiKey = request.getHeader(X_API_KEY);
 
+            System.out.println("=== API KEY FILTER ===");
+            System.out.println("Received key: [" + apiKey + "]");
+            System.out.println("Valid key:    [" + validApiKey + "]");
+
             if (apiKey == null ||  apiKey.isBlank()) {
-                throw new BadCredentialsException("Missing API Key header!");
+                throw new InvalidApiKeyException(
+                        "Missing API Key header!",
+                        HttpStatus.UNAUTHORIZED);
             }
 
             if (!apiKey.equals(validApiKey)) {
-                throw new BadCredentialsException("Invalid API Key!");
+                throw new InvalidApiKeyException(
+                        "Invalid API Key!",
+                        HttpStatus.FORBIDDEN);
             }
 
             Authentication authentication = new ApiKeyAuthentication(apiKey);
@@ -42,8 +52,8 @@ public class ApiKeyAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        }catch(BadCredentialsException e){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }catch(InvalidApiKeyException e){
+            response.setStatus(e.getHttpStatus().value());
             response.getWriter().write(e.getMessage());
         }
     }
