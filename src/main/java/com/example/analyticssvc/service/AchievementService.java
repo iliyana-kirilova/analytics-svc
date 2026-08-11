@@ -10,6 +10,8 @@ import com.example.analyticssvc.web.dto.AchievementDto;
 import com.example.analyticssvc.web.dto.DailySnapshotRequest;
 import com.example.analyticssvc.web.dto.WeeklySummaryDto;
 import com.example.analyticssvc.web.mapper.AchievementMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,6 +32,7 @@ public class AchievementService {
         this.dailySnapshotRepository = dailySnapshotRepository;
     }
 
+    @CacheEvict(value = "userAchievements", key = "#request.userId")
     public List<AchievementDto> checkAndSave(AchievementCheckRequest request) {
         return checker.check(request)
                 .stream()
@@ -37,6 +40,7 @@ public class AchievementService {
                 .toList();
     }
 
+    @Cacheable(value = "userAchievements", key = "#userId")
     public List<AchievementDto> getUserAchievements(UUID userId) {
         return userAchievementRepository
                 .findByUserIdAndStatus(userId, AchievementStatus.ACTIVE)
